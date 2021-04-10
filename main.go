@@ -17,9 +17,10 @@ func GetNewPredictor() *paddle.Predictor {
 	config.SwitchUseFeedFetchOps(false)
 	config.SwitchSpecifyInputNames(true)
 	config.SwitchIrOptim(false)
+	predictor := paddle.NewPredictor(config)
 	config.MkldnnEnabled()
 
-	return paddle.NewPredictor(config)
+	return predictor
 }
 
 var CH = make(chan *paddle.Predictor, 100)
