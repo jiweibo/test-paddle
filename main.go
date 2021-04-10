@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"test-paddle/data"
 	"test-paddle/paddle"
+	"time"
 )
 
 func GetNewPredictor() *paddle.Predictor {
@@ -16,17 +17,30 @@ func GetNewPredictor() *paddle.Predictor {
 	config.SwitchUseFeedFetchOps(false)
 	config.SwitchSpecifyInputNames(true)
 	config.SwitchIrOptim(false)
+	config.MkldnnEnabled()
 
 	return paddle.NewPredictor(config)
 }
 
+var CH = make(chan *paddle.Predictor, 100)
+
 func main() {
 
-	ch := make(chan *paddle.Predictor, 30)
+
 
 	for i := 0; i < 30; i++ {
-		ch <- GetNewPredictor()
+		CH <- GetNewPredictor()
 	}
+
+	go func() {
+		time.Sleep(3 * time.Second)
+		CH2 := make(chan *paddle.Predictor, 100)
+		for i := 0; i < 30; i++ {
+
+			CH2 <- GetNewPredictor()
+		}
+		CH = CH2
+	}()
 
 	features := make(map[string][]int64)
 	json.Unmarshal([]byte(data.TestData), &features)
@@ -34,7 +48,7 @@ func main() {
 
 	for i := 0; i < 10000; i++ {
 		fmt.Printf("i = %+v \n", i)
-		predict := <-ch
+		predict := <-CH
 		go func(ch chan *paddle.Predictor, p *paddle.Predictor) {
 
 			defer func() {
@@ -61,7 +75,7 @@ func main() {
 				result = append(result, float64(v[0]))
 			}
 			//fmt.Printf("result = %+v", result)
-		}(ch, predict)
+		}(CH, predict)
 
 	}
 
