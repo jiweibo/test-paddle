@@ -18,7 +18,7 @@ func GetNewPredictor() *paddle.Predictor {
 	config.SwitchSpecifyInputNames(true)
 	config.SwitchIrOptim(false)
 	predictor := paddle.NewPredictor(config)
-	config.MkldnnEnabled()
+	config.MkldnnQuantizerEnabled()
 
 	return predictor
 }
