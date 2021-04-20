@@ -52,6 +52,7 @@ func main() {
 		predict := <-CH
 		go func(ch chan *paddle.Predictor, p *paddle.Predictor) {
 
+			start := time.Now()
 			defer func() {
 				ch <- p
 			}()
@@ -75,7 +76,9 @@ func main() {
 			for _, v := range tmp {
 				result = append(result, float64(v[0]))
 			}
-			//fmt.Printf("result = %+v", result)
+
+
+			fmt.Printf("time = %+v", time.Now().Sub(start))
 		}(CH, predict)
 
 	}
