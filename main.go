@@ -29,19 +29,19 @@ func main() {
 
 
 
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 16; i++ {
 		CH <- GetNewPredictor()
 	}
 
-	go func() {
-		time.Sleep(3 * time.Second)
-		CH2 := make(chan *paddle.Predictor, 100)
-		for i := 0; i < 30; i++ {
-
-			CH2 <- GetNewPredictor()
-		}
-		CH = CH2
-	}()
+	//go func() {
+	//	time.Sleep(3 * time.Second)
+	//	CH2 := make(chan *paddle.Predictor, 100)
+	//	for i := 0; i < 30; i++ {
+	//
+	//		CH2 <- GetNewPredictor()
+	//	}
+	//	CH = CH2
+	//}()
 
 	features := make(map[string][]int64)
 	json.Unmarshal([]byte(data.TestData), &features)
