@@ -17,11 +17,12 @@ var mx sync.Mutex
 
 var threadNum = 16
 
-// var request_num = 4000000
-// var request_num = 1000
-var request_num = 400000
+// var requestNum = 4000000
+// var requestNum = 1000
+var requestNum = 400000
 
-var times []time.Duration
+var times = make([]time.Duration, requestNum)
+var idx int = 0
 
 var ch = make(chan int, threadNum)
 
@@ -82,7 +83,7 @@ func main() {
 
 	features := parseJson()
 
-	for i := 0; i < request_num; i++ {
+	for i := 0; i < requestNum; i++ {
 		keyId := <-ch
 		wg.Add(1)
 		go func(keyId int) {
@@ -103,7 +104,8 @@ func main() {
 			// printOutAvg(res0[keyId], res1[keyId], outData2[keyId])
 
 			mx.Lock()
-			times = append(times, last)
+			times[idx] = last
+			idx += 1
 
 			defer func() {
 				wg.Done()
